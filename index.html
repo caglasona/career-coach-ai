@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AI Career Coach | Çağla Sona</title>
-    <!-- Harici Kütüphaneler (İnternet Bağlantısı Gerekir) -->
+    <!-- Harici Tasarım Kütüphaneleri -->
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
@@ -32,16 +32,15 @@
         }
 
         .roadmap-card:hover { 
-            transform: translateY(-4px) scale(1.01);
+            transform: translateY(-4px);
             box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
             background: white;
         }
 
-        /* Loading Spinner */
         .spinner {
             border: 3px solid rgba(0, 0, 0, 0.1);
-            width: 36px;
-            height: 36px;
+            width: 40px;
+            height: 40px;
             border-radius: 50%;
             border-left-color: #4f46e5;
             animation: spin 1s linear infinite;
@@ -53,27 +52,28 @@
         }
     </style>
 </head>
-<body class="min-h-screen text-slate-900">
+<body class="min-h-screen text-slate-900 leading-relaxed">
 
+    <!-- Üst Başlık Bölümü -->
     <header class="ai-gradient text-white py-16 px-6 relative overflow-hidden">
         <div class="absolute top-0 right-0 -mt-20 -mr-20 w-80 h-80 bg-white/10 rounded-full blur-3xl"></div>
         
         <div class="max-w-5xl mx-auto flex flex-col md:flex-row justify-between items-center relative z-10 gap-8">
             <div class="text-center md:text-left">
-                <h1 class="text-5xl font-extrabold tracking-tight mb-3 italic">
+                <h1 class="text-4xl md:text-5xl font-extrabold tracking-tight mb-3 italic">
                     AI Career <span class="text-indigo-200 uppercase font-black">Coach</span>
                 </h1>
-                <p class="text-indigo-100 text-lg opacity-90 max-w-xl leading-relaxed">
-                    Güvenli Backend mimarisi ile çalışan kariyer analiz motorunuz.
+                <p class="text-indigo-100 text-lg opacity-90 max-w-xl">
+                    Mühendislik portfolyonuz için güvenli sunucu (Apps Script) mimarili analiz motoru.
                 </p>
             </div>
             
-            <div class="flex flex-col items-center bg-white/10 backdrop-blur-md p-6 rounded-[2rem] border border-white/20 min-w-[180px]">
+            <div class="flex flex-col items-center bg-white/10 backdrop-blur-md p-6 rounded-[2.5rem] border border-white/20 min-w-[180px]">
                 <div class="flex items-center gap-3 mb-1">
                     <span class="w-3 h-3 bg-green-400 rounded-full animate-ping"></span>
-                    <span class="text-xs font-black tracking-widest uppercase">Proxy Status</span>
+                    <span class="text-xs font-black tracking-widest uppercase">Sunucu Durumu</span>
                 </div>
-                <p class="text-xl font-bold uppercase tracking-tight">Bağlantı Aktif</p>
+                <p class="text-xl font-bold uppercase tracking-tight text-green-300">AKTİF</p>
             </div>
         </div>
     </header>
@@ -81,23 +81,24 @@
     <main class="max-w-5xl mx-auto px-6 -mt-12 pb-24 relative z-20">
         <div class="grid lg:grid-cols-3 gap-10">
             
+            <!-- Giriş Alanları (Sol) -->
             <div class="lg:col-span-1 space-y-8">
                 <div class="glass-panel p-8 rounded-[2.5rem] space-y-6">
                     <div>
-                        <label class="flex items-center gap-2 text-sm font-bold text-slate-700 mb-3 uppercase tracking-tighter italic">
+                        <label class="flex items-center gap-2 text-sm font-bold text-slate-700 mb-3 uppercase italic">
                             <i class="fas fa-briefcase text-indigo-500"></i> Hedef İş İlanı
                         </label>
                         <textarea id="jobDesc" rows="6" 
-                            placeholder="İlan metnini buraya yapıştırın..." 
+                            placeholder="İş tanımını buraya yapıştırın..." 
                             class="w-full bg-slate-50 border border-slate-200 rounded-2xl p-4 text-sm focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 outline-none transition-all resize-none"></textarea>
                     </div>
                     
                     <div>
-                        <label class="flex items-center gap-2 text-sm font-bold text-slate-700 mb-3 uppercase tracking-tighter italic">
+                        <label class="flex items-center gap-2 text-sm font-bold text-slate-700 mb-3 uppercase italic">
                             <i class="fas fa-code text-indigo-500"></i> Mevcut Yetenekler
                         </label>
                         <textarea id="userSkills" rows="6" 
-                            placeholder="Bildiklerinizi buraya yazın..." 
+                            placeholder="Bildiğiniz teknolojileri buraya yazın..." 
                             class="w-full bg-slate-50 border border-slate-200 rounded-2xl p-4 text-sm focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 outline-none transition-all resize-none"></textarea>
                     </div>
 
@@ -108,22 +109,27 @@
                 </div>
             </div>
 
+            <!-- Sonuç Paneli (Sağ) -->
             <div class="lg:col-span-2 space-y-8">
+                
+                <!-- Karşılama Ekranı -->
                 <div id="welcome" class="glass-panel p-20 rounded-[3rem] text-center border-dashed border-2 border-slate-300">
-                    <div class="w-24 h-24 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-6 text-slate-300">
-                        <i class="fas fa-terminal text-4xl"></i>
+                    <div class="w-24 h-24 bg-slate-50 rounded-full flex items-center justify-center mx-auto mb-6 text-indigo-200 shadow-inner">
+                        <i class="fas fa-server text-4xl"></i>
                     </div>
-                    <h3 class="text-xl font-bold text-slate-400 mb-2 uppercase tracking-tighter">Analiz Hazır</h3>
+                    <h3 class="text-xl font-bold text-slate-400 mb-2 uppercase tracking-tighter">Sunucu Bağlantısı Hazır</h3>
                     <p class="text-slate-400 text-sm max-w-xs mx-auto italic font-medium leading-relaxed">
-                        Verileri girip "Analizi Başlat" butonuna bastığınızda sonuçlar burada görünecektir.
+                        Analiz butonuna bastığınızda veriler sunucuda işlenecek ve sonuçlar burada belirecektir.
                     </p>
                 </div>
 
+                <!-- Yükleniyor Ekranı -->
                 <div id="loading" class="hidden glass-panel p-24 rounded-[3rem] text-center">
                     <div class="spinner mx-auto mb-6"></div>
-                    <p class="text-indigo-900 font-bold italic animate-pulse">Backend Sunucusu Yanıt Bekliyor...</p>
+                    <p class="text-indigo-900 font-bold italic animate-pulse">Yapay Zeka Yanıt Hazırlıyor...</p>
                 </div>
 
+                <!-- Sonuçlar Ekranı -->
                 <div id="results" class="hidden space-y-8">
                     <div class="glass-panel p-10 rounded-[2.5rem] relative overflow-hidden">
                         <h3 class="text-2xl font-black mb-6 text-indigo-950 flex items-center gap-3 uppercase tracking-tighter italic">
@@ -136,7 +142,7 @@
                     <div id="roadmapGrid" class="grid md:grid-cols-2 gap-6"></div>
 
                     <div class="bg-indigo-950 text-white p-12 rounded-[3rem] shadow-2xl border-t-8 border-t-indigo-500">
-                        <h3 class="text-xl font-bold mb-4 uppercase tracking-[0.2em] text-indigo-400 italic">Mühendisçe Tavsiye</h3>
+                        <h3 class="text-xl font-bold mb-4 uppercase tracking-[0.2em] text-indigo-400 italic">Kariyer Tavsiyesi</h3>
                         <p id="careerAdvice" class="text-indigo-100 text-lg italic leading-relaxed font-medium"></p>
                     </div>
                 </div>
@@ -146,21 +152,25 @@
 
     <footer class="max-w-5xl mx-auto px-6 py-12 border-t border-slate-200 text-center">
         <p class="text-slate-400 text-xs font-bold uppercase tracking-widest italic">
-            &copy; 2024 Cagla Sona Portfolio | Secure AI Integration
+            &copy; 2026 Çağla Sona Portfolio | Mühendislik Portfolyosu
         </p>
     </footer>
 
     <script>
-        // Apps Script URL'inizi buraya yapıştırın
-        const proxyUrl = "BURAYA_ALDIĞIN_URL_YI_YAPIŞTIR"; 
+        /**
+         * 🏁 FINAL ADIM:
+         * Google Apps Script'ten aldığın "/exec" ile biten URL'yi 
+         * aşağıdaki tırnakların içine yapıştır.
+         */
+        const proxyUrl = "https://script.google.com/macros/s/AKfycbwaDV4eVy1wCTUkopiB0LZygk9319rXRdL1HH_9bILHGI3sAbNYy-mRWxn6TETARDIk/exec"; 
 
         async function analyzeCareer() {
-            const jobDesc = document.getElementById('jobDesc').value;
-            const userSkills = document.getElementById('userSkills').value;
+            const jobDesc = document.getElementById('jobDesc').value.trim();
+            const userSkills = document.getElementById('userSkills').value.trim();
             const btn = document.getElementById('analyzeBtn');
 
-            if (proxyUrl === "BURAYA_ALDIĞIN_URL_YI_YAPIŞTIR") {
-                alert("Lütfen proxyUrl kısmını güncelleyin!");
+            if (proxyUrl.includes("BURAYA")) {
+                alert("Lütfen koddaki proxyUrl kısmına Apps Script linkinizi ekleyin!");
                 return;
             }
 
@@ -174,15 +184,26 @@
             document.getElementById('loading').classList.remove('hidden');
             btn.disabled = true;
 
-            const prompt = `Analiz et ve JSON ver: {"gap_analysis": "...", "weeks": [{"week": 1, "topic": "...", "tasks": ["..."]}], "advice": "..."}`;
+            // Prompt yapısını tek parça halinde sunucuya gönderiyoruz (Hata payını sıfıra indirmek için)
+            const fullPrompt = `Sen bir profesyonel kariyer koçusun.
+İş İlanı: ${jobDesc}
+Kullanıcı Yetenekleri: ${userSkills}
+
+Lütfen cevabını SADECE şu JSON formatında ver (başka bir şey yazma):
+{"gap_analysis": "özet metin", "weeks": [{"week": 1, "topic": "konu", "tasks": ["görev"]}], "advice": "tavsiye"}`;
 
             try {
+                // Kendi Sunucumuza (Apps Script) istek atıyoruz
                 const response = await fetch(proxyUrl, {
                     method: 'POST',
-                    body: JSON.stringify({ prompt: `İş: ${jobDesc}\nYetenekler: ${userSkills}\n\n${prompt}` })
+                    body: JSON.stringify({ prompt: fullPrompt })
                 });
 
                 const result = await response.json();
+                
+                if (result.error) throw new Error(result.error);
+
+                // AI yanıtını temizle ve JSON'a çevir
                 let text = result.candidates[0].content.parts[0].text;
                 text = text.replace(/```json/g, "").replace(/```/g, "").trim();
                 
@@ -191,7 +212,7 @@
 
             } catch (error) {
                 console.error(error);
-                alert("Hata: Sunucuya ulaşılamadı.");
+                alert("Bağlantı Hatası: Sunucu yanıt vermedi veya ayarlar hatalı.");
                 document.getElementById('welcome').classList.remove('hidden');
             } finally {
                 document.getElementById('loading').classList.add('hidden');
@@ -213,10 +234,10 @@
                 card.innerHTML = `
                     <div class="flex items-center justify-between mb-4">
                         <span class="bg-indigo-100 text-indigo-700 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest italic">Hafta ${w.week}</span>
-                        <i class="fas fa-calendar-check text-indigo-200"></i>
+                        <i class="fas fa-check-double text-indigo-200"></i>
                     </div>
-                    <h4 class="font-bold text-slate-800 mb-3 leading-tight">${w.topic}</h4>
-                    <ul class="text-xs space-y-2 text-slate-500 font-medium italic">
+                    <h4 class="font-bold text-slate-800 mb-3 leading-tight italic">${w.topic}</h4>
+                    <ul class="text-xs space-y-2 text-slate-500 font-medium">
                         ${w.tasks.map(t => `<li>• ${t}</li>`).join('')}
                     </ul>
                 `;
