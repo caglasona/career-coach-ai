@@ -38,7 +38,7 @@
         <div class="max-w-5xl mx-auto flex flex-col md:flex-row justify-between items-center gap-6">
             <div>
                 <h1 class="text-4xl font-extrabold tracking-tight mb-2 italic">AI Career <span class="text-indigo-200 uppercase">Coach</span></h1>
-                <p class="text-indigo-100 opacity-90 font-medium">Güvenli Analiz Motoru v1.1 (Stable)</p>
+                <p class="text-indigo-100 opacity-90 font-medium">Güvenli Analiz Motoru v1.2 (Hybrid Fix)</p>
             </div>
             <div class="flex items-center gap-4">
                 <button onclick="resetKey()" class="bg-white/20 hover:bg-white/40 px-4 py-2 rounded-xl text-xs font-bold transition">
@@ -138,9 +138,10 @@
             document.getElementById('loading').classList.remove('hidden');
             btn.disabled = true;
 
-            // ÇÖZÜM: 'systemInstruction' yerine her şeyi tek bir prompt içinde gönderiyoruz.
-            // Bu yöntem 'Invalid JSON payload' hatasını %100 engeller.
-            const fullPrompt = `Sen bir kariyer koçusun.
+            // ÇÖZÜM: 'v1beta' endpoint'i ile 'gemini-1.5-flash' kullanıyoruz.
+            // Ama 'systemInstruction' alanını KULLANMIYORUZ (Invalid JSON hatasını önlemek için).
+            const fullPrompt = `Sen bir kariyer koçusun. Görevin, kullanıcının girdiği iş ilanı ile yeteneklerini karşılaştırıp eksikleri belirlemek ve 4 haftalık bir yol haritası sunmaktır.
+            
 İş İlanı: ${jobDesc}
 Kullanıcı Yetenekleri: ${userSkills}
 
@@ -148,8 +149,8 @@ ANALİZ ET VE SADECE JSON FORMATINDA CEVAP VER.
 Format: {"gap_analysis": "özet", "weeks": [{"week": 1, "topic": "konu", "tasks": ["görev"]}], "advice": "tavsiye"}`;
 
             try {
-                // v1 endpoint'i en kararlı olanıdır.
-                const response = await fetch(`https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=${apiKey}`, {
+                // v1beta sürümünü kullanarak modelin bulunmasını sağlıyoruz.
+                const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
@@ -161,9 +162,8 @@ Format: {"gap_analysis": "özet", "weeks": [{"week": 1, "topic": "konu", "tasks"
                 
                 if (result.error) throw new Error(result.error.message);
 
-                // AI'dan gelen cevabı temizleyip JSON'a çeviriyoruz
                 let responseText = result.candidates[0].content.parts[0].text;
-                // Eğer AI markdown blokları içinde gönderirse temizle
+                // AI yanıtını temizleme (Markdown bloklarını kaldırır)
                 responseText = responseText.replace(/```json/g, "").replace(/```/g, "").trim();
                 
                 const data = JSON.parse(responseText);
