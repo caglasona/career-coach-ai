@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Career Coach | Çağla Sona</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: #f8fafc;
+        }
+        .ai-gradient {
+            background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+        }
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(226, 232, 240, 0.8);
+        }
+        pre { white-space: pre-wrap; word-wrap: break-word; }
+    </style>
+</head>
+<body class="min-h-screen text-slate-900">
+
+    <!-- Header -->
+    <header class="ai-gradient text-white py-12 px-6 shadow-lg">
+        <div class="max-w-5xl mx-auto flex flex-col md:flex-row justify-between items-center gap-6">
+            <div>
+                <h1 class="text-4xl font-extrabold tracking-tight mb-2">AI Career <span class="text-indigo-200">Engineer</span></h1>
+                <p class="text-indigo-100 opacity-90">Kariyer hedeflerin için yapay zeka destekli yol haritası.</p>
+            </div>
+            <div class="bg-white/10 p-4 rounded-2xl backdrop-blur-md border border-white/20">
+                <p class="text-xs uppercase font-bold tracking-widest text-indigo-200 mb-1">Analiz Motoru</p>
+                <p class="text-sm font-medium">Gemini 2.5 Flash v09-2025</p>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-5xl mx-auto px-6 -mt-8 pb-20">
+        <div class="grid lg:grid-cols-3 gap-8">
+            
+            <!-- Sol Panel: Girişler -->
+            <div class="lg:col-span-1 space-y-6">
+                <div class="glass-panel p-6 rounded-3xl shadow-sm">
+                    <h2 class="text-lg font-bold mb-4 flex items-center gap-2">
+                        <i class="fas fa-briefcase text-indigo-600"></i> Hedef İş İlanı
+                    </h2>
+                    <textarea id="jobDesc" rows="6" placeholder="Hedeflediğin iş ilanının açıklamasını buraya yapıştır..." 
+                        class="w-full bg-slate-50 border border-slate-200 rounded-xl p-4 text-sm focus:ring-2 focus:ring-indigo-500 outline-none transition-all"></textarea>
+                </div>
+
+                <div class="glass-panel p-6 rounded-3xl shadow-sm">
+                    <h2 class="text-lg font-bold mb-4 flex items-center gap-2">
+                        <i class="fas fa-user-graduate text-indigo-600"></i> Yeteneklerin & CV
+                    </h2>
+                    <textarea id="userSkills" rows="6" placeholder="Sahip olduğun yetenekleri, bildiğin dilleri ve deneyimlerini yaz..." 
+                        class="w-full bg-slate-50 border border-slate-200 rounded-xl p-4 text-sm focus:ring-2 focus:ring-indigo-500 outline-none transition-all"></textarea>
+                </div>
+
+                <button onclick="analyzeCareer()" id="analyzeBtn" class="w-full ai-gradient text-white py-4 rounded-2xl font-bold shadow-lg hover:opacity-90 transition-all active:scale-95 flex items-center justify-center gap-3">
+                    <i class="fas fa-magic"></i> Analiz Et ve Yol Haritası Çıkar
+                </button>
+            </div>
+
+            <!-- Sağ Panel: Sonuçlar -->
+            <div class="lg:col-span-2 space-y-6">
+                
+                <!-- Loading State -->
+                <div id="loading" class="hidden glass-panel p-12 rounded-3xl text-center">
+                    <div class="inline-block animate-spin rounded-full h-12 w-12 border-t-4 border-indigo-600 mb-4"></div>
+                    <p class="text-slate-600 font-medium italic">Yapay zeka verileri analiz ediyor, çalışma planın hazırlanıyor...</p>
+                </div>
+
+                <!-- Sonuç Ekranı -->
+                <div id="results" class="hidden space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
+                    
+                    <!-- Skill Gap Card -->
+                    <div class="glass-panel p-8 rounded-3xl shadow-sm border-l-8 border-l-indigo-600">
+                        <h3 class="text-xl font-bold mb-4 flex items-center gap-2 text-indigo-900">
+                            <i class="fas fa-search-plus"></i> Yetenek Açığı Analizi
+                        </h3>
+                        <div id="gapAnalysis" class="text-slate-700 leading-relaxed space-y-2"></div>
+                    </div>
+
+                    <!-- Roadmap (4 Weeks) -->
+                    <div class="grid md:grid-cols-2 gap-4" id="roadmapGrid">
+                        <!-- Haftalar Buraya Gelecek -->
+                    </div>
+
+                    <!-- Advice Card -->
+                    <div class="bg-indigo-900 text-white p-8 rounded-3xl shadow-xl">
+                        <h3 class="text-xl font-bold mb-3">Mühendisçe Tavsiyeler</h3>
+                        <p id="careerAdvice" class="text-indigo-100 text-sm leading-relaxed italic"></p>
+                    </div>
+                </div>
+
+                <!-- Welcome State -->
+                <div id="welcome" class="glass-panel p-12 rounded-3xl text-center border-dashed border-2 border-slate-300">
+                    <i class="fas fa-robot text-5xl text-slate-200 mb-4"></i>
+                    <p class="text-slate-400 font-medium">Başlamak için bilgileri doldurun. <br> AI Danışmanınız hazır bekliyor.</p>
+                </div>
+
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // --- API CONFIGURATION ---
+        const apiKey = "AIzaSyAcZonKcql_d-eLRL1U9WUkEXNQe3os2HA"; // Kendi Gemini API anahtarını buraya koymalısın
+
+        async function analyzeCareer() {
+            const jobDesc = document.getElementById('jobDesc').value;
+            const userSkills = document.getElementById('userSkills').value;
+            const btn = document.getElementById('analyzeBtn');
+            
+            if (!jobDesc || !userSkills) {
+                alert("Lütfen her iki alanı da doldurun.");
+                return;
+            }
+
+            // UI Yönetimi
+            document.getElementById('welcome').classList.add('hidden');
+            document.getElementById('results').classList.add('hidden');
+            document.getElementById('loading').classList.remove('hidden');
+            btn.disabled = true;
+            btn.classList.add('opacity-50');
+
+            const systemPrompt = `Sen profesyonel bir yazılım dünyası kariyer koçu ve kıdemli bir teknoloji işe alım uzmanısın. Kullanıcının verdiği iş ilanı ve kendi yeteneklerini karşılaştıracaksın. 
+            Cevabını mutlaka şu JSON formatında ver:
+            {
+              "gap_analysis": "Eksik yeteneklerin kısa ve vurucu özeti",
+              "weeks": [
+                {"week": 1, "topic": "Konu", "tasks": ["Görev 1", "Görev 2"]},
+                {"week": 2, "topic": "Konu", "tasks": ["Görev 1", "Görev 2"]},
+                {"week": 3, "topic": "Konu", "tasks": ["Görev 1", "Görev 2"]},
+                {"week": 4, "topic": "Konu", "tasks": ["Görev 1", "Görev 2"]}
+              ],
+              "advice": "Mühendislik kariyeri için özel bir tavsiye"
+            }`;
+
+            const userQuery = `İş İlanı: ${jobDesc}\n\nKullanıcı Yetenekleri: ${userSkills}`;
+
+            try {
+                const response = await fetchWithRetry(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        contents: [{ parts: [{ text: userQuery }] }],
+                        systemInstruction: { parts: [{ text: systemPrompt }] },
+                        generationConfig: { responseMimeType: "application/json" }
+                    })
+                });
+
+                const result = await response.json();
+                const data = JSON.parse(result.candidates[0].content.parts[0].text);
+
+                renderResults(data);
+
+            } catch (error) {
+                console.error(error);
+                alert("AI yanıt vermedi. API anahtarını kontrol edin veya biraz bekleyin.");
+            } finally {
+                document.getElementById('loading').classList.add('hidden');
+                btn.disabled = false;
+                btn.classList.remove('opacity-50');
+            }
+        }
+
+        function renderResults(data) {
+            document.getElementById('results').classList.remove('hidden');
+            document.getElementById('gapAnalysis').innerHTML = `<p>${data.gap_analysis}</p>`;
+            document.getElementById('careerAdvice').innerText = data.advice;
+
+            const grid = document.getElementById('roadmapGrid');
+            grid.innerHTML = "";
+
+            data.weeks.forEach(w => {
+                const card = document.createElement('div');
+                card.className = "glass-panel p-6 rounded-2xl hover:border-indigo-300 transition-colors";
+                card.innerHTML = `
+                    <div class="flex justify-between items-start mb-4">
+                        <span class="bg-indigo-600 text-white text-[10px] font-bold px-2 py-1 rounded">HAFTA ${w.week}</span>
+                    </div>
+                    <h4 class="font-bold text-slate-800 mb-3">${w.topic}</h4>
+                    <ul class="text-xs text-slate-600 space-y-2">
+                        ${w.tasks.map(task => `<li class="flex items-center gap-2"><i class="fas fa-check text-indigo-400"></i> ${task}</li>`).join('')}
+                    </ul>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        async function fetchWithRetry(url, options, retries = 5, backoff = 1000) {
+            try {
+                const res = await fetch(url, options);
+                if (!res.ok && retries > 0) throw new Error();
+                return res;
+            } catch (err) {
+                if (retries <= 0) throw err;
+                await new Promise(resolve => setTimeout(resolve, backoff));
+                return fetchWithRetry(url, options, retries - 1, backoff * 2);
+            }
+        }
+    </script>
+</body>
+</html>
