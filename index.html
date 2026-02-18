@@ -108,6 +108,10 @@
                         class="w-full ai-gradient text-white py-5 rounded-2xl font-bold shadow-2xl hover:shadow-indigo-500/40 transform hover:-translate-y-1 active:scale-95 transition-all flex items-center justify-center gap-3">
                         <i class="fas fa-wand-magic-sparkles"></i> Analizi Başlat
                     </button>
+
+                    <button onclick="clearSystem()" class="w-full text-slate-400 text-[10px] uppercase font-bold hover:text-red-500 transition py-2">
+                        <i class="fas fa-sync-alt mr-1"></i> Sistemi ve Hafızayı Sıfırla
+                    </button>
                 </div>
             </div>
 
@@ -129,6 +133,7 @@
                 <div id="loading" class="hidden glass-panel p-24 rounded-[3rem] text-center">
                     <div class="spinner mx-auto mb-6"></div>
                     <p class="text-indigo-900 font-bold italic animate-pulse">Yapay Zeka Yanıt Hazırlıyor...</p>
+                    <p class="text-slate-400 text-[10px] mt-2 uppercase tracking-widest">Backend Redirection Aktif</p>
                 </div>
 
                 <!-- Sonuçlar Ekranı -->
@@ -161,7 +166,7 @@
     <script>
         /**
          * 🏁 FINAL GÜNCELLEME:
-         * CORS sorunlarını aşmak için fetch parametrelerini sadeleştirdik.
+         * "Failed to fetch" hatasını çözmek için 'simple request' moduna geçtik.
          */
         const proxyUrl = "https://script.google.com/macros/s/AKfycbw6ov-WCFyuwdHwRWQF7IHkO0qTz8yuNTnGnqFGGFI8USs7b1EK4rBtRQQk9sjfF6qr/exec"; 
 
@@ -170,7 +175,7 @@
             const userSkills = document.getElementById('userSkills').value.trim();
             const btn = document.getElementById('analyzeBtn');
 
-            if (proxyUrl.includes("BURAYA")) {
+            if (proxyUrl.includes("BURAYA") || proxyUrl === "") {
                 alert("Hata: Lütfen koddaki proxyUrl kısmına Apps Script linkinizi ekleyin!");
                 return;
             }
@@ -193,17 +198,18 @@ Lütfen cevabını SADECE şu JSON formatında ver:
 {"gap_analysis": "özet", "weeks": [{"week": 1, "topic": "konu", "tasks": ["görev"]}], "advice": "tavsiye"}`;
 
             try {
-                // MÜHENDİSLİK NOTU: CORS preflight (OPTIONS) isteğini önlemek için 
-                // Content-Type başlığını siliyoruz. Google Script bunu 'text/plain' olarak 
-                // alacak ve e.postData.contents içinde okuyacaktır.
+                // MÜHENDİSLİK ÇÖZÜMÜ: 
+                // Google Apps Script redirect (302) döndürür. Tarayıcının CORS kontrolüne takılmaması için
+                // Content-Type: application/json BAŞLIĞINI KALDIRDIK.
+                // Bu sayede istek "Simple Request" kategorisine girer ve pre-flight (OPTIONS) atmaz.
                 const response = await fetch(proxyUrl, {
                     method: 'POST',
-                    mode: 'cors', // CORS'u açık bırak ama basit istek yap
+                    mode: 'cors',
                     body: JSON.stringify({ prompt: fullPrompt })
                 });
 
                 if (!response.ok) {
-                    throw new Error("Sunucu yanıt vermedi. Apps Script ayarlarında 'Anyone' seçili olduğundan emin olun.");
+                    throw new Error("Sunucu yanıt vermedi. Lütfen Apps Script ayarlarını kontrol edin.");
                 }
 
                 const result = await response.json();
@@ -217,8 +223,15 @@ Lütfen cevabını SADECE şu JSON formatında ver:
                 renderResults(data);
 
             } catch (error) {
-                console.error("Detaylı Hata:", error);
-                alert("Hata Oluştu!\n\nTeknik Detay: " + error.message + "\n\nİpucu: Eğer 'Failed to fetch' alıyorsanız, tarayıcı eklentilerinizi (AdBlock vb.) kapatıp sayfayı yenileyin.");
+                console.error("Detaylı Hata Günlüğü:", error);
+                
+                let errorMsg = "Bağlantı Hatası (Failed to fetch)\n\n";
+                errorMsg += "Çözüm Adımları:\n";
+                errorMsg += "1. Apps Script sayfanızda 'Deploy' -> 'Manage' -> 'Anyone' seçili mi?\n";
+                errorMsg += "2. Browser eklentilerini (AdBlock vb.) kapatıp deneyin.\n";
+                errorMsg += "3. İnternet bağlantınızı veya VPN durumunuzu kontrol edin.";
+                
+                alert(errorMsg);
                 document.getElementById('welcome').classList.remove('hidden');
             } finally {
                 document.getElementById('loading').classList.add('hidden');
@@ -249,6 +262,14 @@ Lütfen cevabını SADECE şu JSON formatında ver:
                 `;
                 grid.appendChild(card);
             });
+        }
+
+        // Hafızadaki eski kalıntıları temizleme fonksiyonu
+        function clearSystem() {
+            localStorage.clear();
+            sessionStorage.clear();
+            alert("Tüm yerel hafıza temizlendi. Sayfa en güncel haliyle yeniden yükleniyor...");
+            location.reload();
         }
     </script>
 </body>
