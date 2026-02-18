@@ -51,9 +51,7 @@
             100% { transform: rotate(360deg); }
         }
 
-        /* Tailwind yüklenmezse diye yedek görsel düzenleme */
         header { padding: 4rem 1rem; text-align: center; color: white; margin-bottom: 2rem; }
-        .flex-container { display: flex; flex-wrap: wrap; gap: 2rem; max-width: 1000px; margin: 0 auto; padding: 0 1rem; }
     </style>
 </head>
 <body class="min-h-screen text-slate-900 leading-relaxed">
@@ -66,16 +64,16 @@
                     AI Career <span class="text-indigo-200 uppercase font-black">Coach</span>
                 </h1>
                 <p class="text-indigo-100 text-lg opacity-90 max-w-xl">
-                    Mühendislik portfolyonuz için güvenli sunucu (Apps Script) mimarili analiz motoru.
+                    Mühendislik portfolyonuz için güvenli sunucu mimarili analiz motoru.
                 </p>
             </div>
             
             <div class="flex flex-col items-center bg-white/10 backdrop-blur-md p-6 rounded-[2.5rem] border border-white/20 min-w-[180px]">
                 <div class="flex items-center gap-3 mb-1">
-                    <span class="w-3 h-3 bg-green-400 rounded-full animate-ping"></span>
+                    <span id="statusDot" class="w-3 h-3 bg-green-400 rounded-full animate-ping"></span>
                     <span class="text-xs font-black tracking-widest uppercase">Sunucu Durumu</span>
                 </div>
-                <p class="text-xl font-bold uppercase tracking-tight text-green-300">BAĞLI</p>
+                <p id="statusText" class="text-xl font-bold uppercase tracking-tight text-green-300 font-mono">AKTİF</p>
             </div>
         </div>
     </header>
@@ -91,7 +89,7 @@
                             <i class="fas fa-briefcase text-indigo-500"></i> Hedef İş İlanı
                         </label>
                         <textarea id="jobDesc" rows="6" 
-                            placeholder="İş tanımını buraya yapıştırın..." 
+                            placeholder="İlan metnini buraya yapıştırın..." 
                             class="w-full bg-slate-50 border border-slate-200 rounded-2xl p-4 text-sm focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 outline-none transition-all resize-none"></textarea>
                     </div>
                     
@@ -100,7 +98,7 @@
                             <i class="fas fa-code text-indigo-500"></i> Mevcut Yetenekler
                         </label>
                         <textarea id="userSkills" rows="6" 
-                            placeholder="Bildiğiniz teknolojileri buraya yazın..." 
+                            placeholder="Bildiğiniz teknolojileri yazın..." 
                             class="w-full bg-slate-50 border border-slate-200 rounded-2xl p-4 text-sm focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 outline-none transition-all resize-none"></textarea>
                     </div>
 
@@ -118,25 +116,21 @@
             <!-- Sonuç Paneli (Sağ) -->
             <div class="lg:col-span-2 space-y-8">
                 
-                <!-- Karşılama Ekranı -->
                 <div id="welcome" class="glass-panel p-20 rounded-[3rem] text-center border-dashed border-2 border-slate-300">
                     <div class="w-24 h-24 bg-slate-50 rounded-full flex items-center justify-center mx-auto mb-6 text-indigo-200 shadow-inner">
                         <i class="fas fa-server text-4xl"></i>
                     </div>
                     <h3 class="text-xl font-bold text-slate-400 mb-2 uppercase tracking-tighter">Sunucu Bağlantısı Hazır</h3>
                     <p class="text-slate-400 text-sm max-w-xs mx-auto italic font-medium leading-relaxed">
-                        Analiz butonuna bastığınızda veriler sunucuda işlenecek ve sonuçlar burada belirecektir.
+                        Analizi başlatarak kişiselleştirilmiş 4 haftalık planınızı oluşturun.
                     </p>
                 </div>
 
-                <!-- Yükleniyor Ekranı -->
                 <div id="loading" class="hidden glass-panel p-24 rounded-[3rem] text-center">
                     <div class="spinner mx-auto mb-6"></div>
-                    <p class="text-indigo-900 font-bold italic animate-pulse">Yapay Zeka Yanıt Hazırlıyor...</p>
-                    <p class="text-slate-400 text-[10px] mt-2 uppercase tracking-widest">Backend Redirection Aktif</p>
+                    <p class="text-indigo-900 font-bold italic animate-pulse font-mono uppercase tracking-widest text-sm">Sunucu Verileri İşliyor...</p>
                 </div>
 
-                <!-- Sonuçlar Ekranı -->
                 <div id="results" class="hidden space-y-8">
                     <div class="glass-panel p-10 rounded-[2.5rem] relative overflow-hidden">
                         <h3 class="text-2xl font-black mb-6 text-indigo-950 flex items-center gap-3 uppercase tracking-tighter italic">
@@ -157,16 +151,10 @@
         </div>
     </main>
 
-    <footer class="max-w-5xl mx-auto px-6 py-12 border-t border-slate-200 text-center">
-        <p class="text-slate-400 text-xs font-bold uppercase tracking-widest italic">
-            &copy; 2026 Çağla Sona Portfolio | Mühendislik Portfolyosu
-        </p>
-    </footer>
-
     <script>
         /**
-         * 🏁 FINAL GÜNCELLEME:
-         * "Failed to fetch" hatasını çözmek için 'simple request' moduna geçtik.
+         * 🏁 ODAK NOKTASI:
+         * Apps Script URL'inizi buraya yapıştırın.
          */
         const proxyUrl = "https://script.google.com/macros/s/AKfycbw6ov-WCFyuwdHwRWQF7IHkO0qTz8yuNTnGnqFGGFI8USs7b1EK4rBtRQQk9sjfF6qr/exec"; 
 
@@ -190,26 +178,19 @@
             document.getElementById('loading').classList.remove('hidden');
             btn.disabled = true;
 
-            const fullPrompt = `Sen bir profesyonel kariyer koçusun.
-İş İlanı: ${jobDesc}
-Kullanıcı Yetenekleri: ${userSkills}
-
-Lütfen cevabını SADECE şu JSON formatında ver:
-{"gap_analysis": "özet", "weeks": [{"week": 1, "topic": "konu", "tasks": ["görev"]}], "advice": "tavsiye"}`;
+            const fullPrompt = `Sen profesyonel bir kariyer koçusun. Hedef: ${jobDesc}, Yetenekler: ${userSkills}. Cevabını sadece JSON formatında ver: {"gap_analysis": "...", "weeks": [{"week": 1, "topic": "...", "tasks": ["..."]}], "advice": "..."}`;
 
             try {
-                // MÜHENDİSLİK ÇÖZÜMÜ: 
-                // Google Apps Script redirect (302) döndürür. Tarayıcının CORS kontrolüne takılmaması için
-                // Content-Type: application/json BAŞLIĞINI KALDIRDIK.
-                // Bu sayede istek "Simple Request" kategorisine girer ve pre-flight (OPTIONS) atmaz.
+                // ÇÖZÜM: 'no-cache' ve sadeleşmiş gövde yapısı ile CORS engelini aşmayı deniyoruz.
                 const response = await fetch(proxyUrl, {
                     method: 'POST',
                     mode: 'cors',
+                    cache: 'no-cache',
                     body: JSON.stringify({ prompt: fullPrompt })
                 });
 
                 if (!response.ok) {
-                    throw new Error("Sunucu yanıt vermedi. Lütfen Apps Script ayarlarını kontrol edin.");
+                    throw new Error("Sunucu yanıt vermedi (HTTP " + response.status + ")");
                 }
 
                 const result = await response.json();
@@ -223,13 +204,14 @@ Lütfen cevabını SADECE şu JSON formatında ver:
                 renderResults(data);
 
             } catch (error) {
-                console.error("Detaylı Hata Günlüğü:", error);
+                console.error("Mühendislik Günlüğü - Hata Detayı:", error);
                 
-                let errorMsg = "Bağlantı Hatası (Failed to fetch)\n\n";
-                errorMsg += "Çözüm Adımları:\n";
-                errorMsg += "1. Apps Script sayfanızda 'Deploy' -> 'Manage' -> 'Anyone' seçili mi?\n";
-                errorMsg += "2. Browser eklentilerini (AdBlock vb.) kapatıp deneyin.\n";
-                errorMsg += "3. İnternet bağlantınızı veya VPN durumunuzu kontrol edin.";
+                // KULLANICIYA NET REHBERLİK
+                let errorMsg = "🛑 BAĞLANTI HATASI (Failed to Fetch)\n\n";
+                errorMsg += "Bu hata genellikle tarayıcı güvenliğinden kaynaklanır. Lütfen şunları yapın:\n\n";
+                errorMsg += "1. Tarayıcınızda 'GİZLİ SEKME' (Incognito) açıp sitenize oradan girin.\n";
+                errorMsg += "2. Apps Script sayfasında 'Deploy' -> 'Anyone' seçtiğinizden emin olun.\n";
+                errorMsg += "3. AdBlock veya benzeri eklentileri bu site için duraklatın.";
                 
                 alert(errorMsg);
                 document.getElementById('welcome').classList.remove('hidden');
@@ -249,14 +231,14 @@ Lütfen cevabını SADECE şu JSON formatında ver:
             
             data.weeks.forEach(w => {
                 const card = document.createElement('div');
-                card.className = "roadmap-card glass-panel p-8 rounded-[2rem] bg-white";
+                card.className = "roadmap-card glass-panel p-8 rounded-[2rem] bg-white shadow-sm";
                 card.innerHTML = `
                     <div class="flex items-center justify-between mb-4">
                         <span class="bg-indigo-100 text-indigo-700 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest italic">Hafta ${w.week}</span>
                         <i class="fas fa-check-double text-indigo-200"></i>
                     </div>
-                    <h4 class="font-bold text-slate-800 mb-3 leading-tight italic text-lg">${w.topic}</h4>
-                    <ul class="text-sm space-y-2 text-slate-500 font-medium">
+                    <h4 class="font-bold text-slate-800 mb-3 leading-tight italic">${w.topic}</h4>
+                    <ul class="text-xs space-y-2 text-slate-500 font-medium italic">
                         ${w.tasks.map(t => `<li>• ${t}</li>`).join('')}
                     </ul>
                 `;
@@ -264,11 +246,10 @@ Lütfen cevabını SADECE şu JSON formatında ver:
             });
         }
 
-        // Hafızadaki eski kalıntıları temizleme fonksiyonu
         function clearSystem() {
             localStorage.clear();
             sessionStorage.clear();
-            alert("Tüm yerel hafıza temizlendi. Sayfa en güncel haliyle yeniden yükleniyor...");
+            alert("Sistem hafızası temizlendi. Lütfen 'Gizli Sekme' üzerinden tekrar deneyin.");
             location.reload();
         }
     </script>
