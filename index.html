@@ -170,7 +170,7 @@
             const btn = document.getElementById('analyzeBtn');
 
             if (proxyUrl.includes("BURAYA")) {
-                alert("Lütfen koddaki proxyUrl kısmına Apps Script linkinizi ekleyin!");
+                alert("Hata: Lütfen koddaki proxyUrl kısmına Apps Script linkinizi ekleyin!");
                 return;
             }
 
@@ -184,7 +184,6 @@
             document.getElementById('loading').classList.remove('hidden');
             btn.disabled = true;
 
-            // Prompt yapısını tek parça halinde sunucuya gönderiyoruz (Hata payını sıfıra indirmek için)
             const fullPrompt = `Sen bir profesyonel kariyer koçusun.
 İş İlanı: ${jobDesc}
 Kullanıcı Yetenekleri: ${userSkills}
@@ -193,17 +192,21 @@ Lütfen cevabını SADECE şu JSON formatında ver (başka bir şey yazma):
 {"gap_analysis": "özet metin", "weeks": [{"week": 1, "topic": "konu", "tasks": ["görev"]}], "advice": "tavsiye"}`;
 
             try {
-                // Kendi Sunucumuza (Apps Script) istek atıyoruz
+                // Sunucuya istek atılıyor
                 const response = await fetch(proxyUrl, {
                     method: 'POST',
                     body: JSON.stringify({ prompt: fullPrompt })
                 });
 
+                if (!response.ok) {
+                    throw new Error(`Sunucu Hatası: ${response.status} - Lütfen Apps Script erişim ayarlarını kontrol edin.`);
+                }
+
                 const result = await response.json();
                 
                 if (result.error) throw new Error(result.error);
 
-                // AI yanıtını temizle ve JSON'a çevir
+                // AI yanıtını işle
                 let text = result.candidates[0].content.parts[0].text;
                 text = text.replace(/```json/g, "").replace(/```/g, "").trim();
                 
@@ -211,8 +214,8 @@ Lütfen cevabını SADECE şu JSON formatında ver (başka bir şey yazma):
                 renderResults(data);
 
             } catch (error) {
-                console.error(error);
-                alert("Bağlantı Hatası: Sunucu yanıt vermedi veya ayarlar hatalı.");
+                console.error("Detaylı Hata:", error);
+                alert("Bağlantı Hatası: Sunucu yanıt vermedi. \n\nOlası Nedenler:\n1. Apps Script erişimi 'Anyone' (Herkes) olarak ayarlanmamış.\n2. URL yanlış kopyalanmış.\n3. Yeni versiyon dağıtılmamış (Re-deploy).");
                 document.getElementById('welcome').classList.remove('hidden');
             } finally {
                 document.getElementById('loading').classList.add('hidden');
