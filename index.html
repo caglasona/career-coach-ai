@@ -83,9 +83,12 @@
     </main>
 
     <script>
+        // Enter tuşu desteği ekliyoruz
+        document.getElementById('userApiKey').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') analyzeCareer();
+        });
+
         async function analyzeCareer() {
-            // Anahtarı koda GÖMMEK yerine, kullanıcının girdiği kutudan okuyoruz.
-            // Bu sayede GitHub'a yüklediğinde anahtarın çalınmaz!
             const apiKey = document.getElementById('userApiKey').value;
             const jobDesc = document.getElementById('jobDesc').value;
             const userSkills = document.getElementById('userSkills').value;
@@ -104,7 +107,6 @@
             const systemPrompt = `Sen bir kariyer koçusun. Cevabını JSON formatında ver: {"gap_analysis": "özet", "weeks": [{"week": 1, "topic": "konu", "tasks": ["görev"]}], "advice": "tavsiye"}`;
 
             try {
-                // En sağlam ve güncel endpoint
                 const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
                 
                 const response = await fetch(url, {
