@@ -11,137 +11,91 @@
         body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #f8fafc; }
         .ai-gradient { background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%); }
         .glass-panel { background: rgba(255, 255, 255, 0.8); backdrop-filter: blur(12px); border: 1px solid rgba(226, 232, 240, 0.8); }
-        .setup-overlay { background: rgba(15, 23, 42, 0.95); backdrop-filter: blur(12px); z-index: 9999; }
+        .roadmap-card { transition: all 0.3s ease; border-left: 4px solid #4f46e5; }
+        .roadmap-card:hover { transform: translateX(5px); background: white; }
     </style>
 </head>
 <body class="min-h-screen text-slate-900">
-
-    <!-- AYARLAR MODALI: Sadece anahtar yoksa veya yenilemek istersen çıkar -->
-    <div id="setupModal" class="fixed inset-0 setup-overlay flex items-center justify-center p-6 hidden">
-        <div class="bg-white rounded-[2.5rem] p-10 max-w-md w-full shadow-2xl relative">
-            <div class="w-16 h-16 bg-indigo-100 rounded-2xl flex items-center justify-center mb-6 text-indigo-600 text-2xl">
-                <i class="fas fa-key"></i>
-            </div>
-            <h2 class="text-2xl font-bold mb-2">Sistem Aktivasyonu</h2>
-            <p class="text-slate-500 text-sm mb-6 leading-relaxed">
-                Google AI güvenliği nedeniyle anahtarınızı koda yazmıyoruz. Lütfen <b>YENİ</b> anahtarınızı buraya girin. Bu işlem bir defalıktır.
-            </p>
-            <input id="keyInput" type="password" placeholder="AIza... ile başlayan anahtar" 
-                class="w-full bg-slate-100 border-2 border-slate-200 rounded-2xl p-4 text-sm mb-4 focus:border-indigo-500 outline-none transition-all">
-            <button onclick="saveKey()" class="w-full ai-gradient text-white py-4 rounded-2xl font-bold shadow-lg hover:scale-[1.02] transition-all">
-                Sistemi Başlat
-            </button>
-        </div>
-    </div>
 
     <header class="ai-gradient text-white py-12 px-6 shadow-lg">
         <div class="max-w-5xl mx-auto flex flex-col md:flex-row justify-between items-center gap-6">
             <div>
                 <h1 class="text-4xl font-extrabold tracking-tight mb-2 italic">AI Career <span class="text-indigo-200 uppercase">Coach</span></h1>
-                <p class="text-indigo-100 opacity-90">Güvenli ve Kararlı Analiz Motoru v1.6</p>
+                <p class="text-indigo-100 opacity-90 font-medium">Backend (Apps Script) ile güçlendirilmiş güvenli analiz motoru.</p>
             </div>
-            <div class="flex items-center gap-4">
-                <button onclick="resetKey()" class="bg-white/20 hover:bg-white/40 px-4 py-2 rounded-xl text-xs font-bold transition">
-                    Anahtarı Değiştir
-                </button>
-                <div class="bg-white/10 p-4 rounded-2xl border border-white/20 text-center">
-                    <p id="status" class="text-sm font-medium flex items-center gap-2">
-                        <span id="statusDot" class="w-2 h-2 bg-yellow-400 rounded-full"></span> <span id="statusText">Beklemede</span>
-                    </p>
-                </div>
+            <div class="bg-white/10 p-4 rounded-2xl border border-white/20 text-center min-w-[140px]">
+                <p class="text-[10px] uppercase font-bold tracking-widest text-indigo-200 mb-1">Sunucu Durumu</p>
+                <p id="status" class="text-sm font-bold flex items-center justify-center gap-2">
+                    <span class="w-2 h-2 bg-green-400 rounded-full animate-pulse"></span> BAĞLI
+                </p>
             </div>
         </div>
     </header>
 
     <main class="max-w-5xl mx-auto px-6 -mt-8 pb-20">
         <div class="grid lg:grid-cols-3 gap-8">
+            <!-- GİRİŞ FORMU -->
             <div class="lg:col-span-1 space-y-6">
                 <div class="glass-panel p-6 rounded-3xl shadow-sm">
                     <label class="block text-sm font-bold text-slate-700 mb-2">Hedef İş İlanı</label>
-                    <textarea id="jobDesc" rows="6" placeholder="İlanı buraya yapıştırın..." class="w-full bg-slate-50 border border-slate-200 rounded-xl p-4 text-sm focus:ring-2 focus:ring-indigo-500 outline-none"></textarea>
+                    <textarea id="jobDesc" rows="6" placeholder="İş ilanını buraya yapıştırın..." class="w-full bg-slate-50 border border-slate-200 rounded-xl p-4 text-sm focus:ring-2 focus:ring-indigo-500 outline-none transition-all"></textarea>
                 </div>
                 <div class="glass-panel p-6 rounded-3xl shadow-sm">
                     <label class="block text-sm font-bold text-slate-700 mb-2">Senin Yeteneklerin</label>
-                    <textarea id="userSkills" rows="6" placeholder="Bildiğin teknolojileri yaz..." class="w-full bg-slate-50 border border-slate-200 rounded-xl p-4 text-sm focus:ring-2 focus:ring-indigo-500 outline-none"></textarea>
+                    <textarea id="userSkills" rows="6" placeholder="Bildiğin diller, araçlar..." class="w-full bg-slate-50 border border-slate-200 rounded-xl p-4 text-sm focus:ring-2 focus:ring-indigo-500 outline-none transition-all"></textarea>
                 </div>
-                <button onclick="analyzeCareer()" id="analyzeBtn" class="w-full ai-gradient text-white py-4 rounded-2xl font-bold shadow-xl hover:opacity-90 active:scale-95 transition-all">
-                    Analizi Başlat
+                <button onclick="analyzeCareer()" id="analyzeBtn" class="w-full ai-gradient text-white py-4 rounded-2xl font-bold shadow-xl hover:shadow-indigo-200 transition-all active:scale-95 flex items-center justify-center gap-3">
+                    <i class="fas fa-magic"></i> Analizi Başlat
                 </button>
             </div>
 
+            <!-- SONUÇ PANELİ -->
             <div class="lg:col-span-2 space-y-6">
                 <div id="loading" class="hidden glass-panel p-16 rounded-3xl text-center">
                     <div class="inline-block animate-spin rounded-full h-12 w-12 border-t-4 border-indigo-600 mb-4"></div>
-                    <p class="text-slate-600 font-bold italic">AI Verileri İnceliyor...</p>
+                    <p class="text-slate-600 font-bold italic">Sunucu verileri işliyor...</p>
                 </div>
+
                 <div id="results" class="hidden space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
                     <div class="glass-panel p-8 rounded-3xl shadow-sm border-l-8 border-l-indigo-600">
-                        <h3 class="text-xl font-bold mb-4 text-indigo-900">Yetenek Analizi</h3>
+                        <h3 class="text-xl font-bold mb-4 text-indigo-900 italic font-black">Yetenek Açığı Analizi</h3>
                         <div id="gapAnalysis" class="text-slate-700 leading-relaxed font-medium"></div>
                     </div>
                     <div class="grid md:grid-cols-2 gap-4" id="roadmapGrid"></div>
                     <div class="bg-indigo-950 text-white p-8 rounded-3xl shadow-2xl">
-                        <h3 class="text-xl font-bold mb-3 uppercase tracking-tighter">Mühendisçe Tavsiye</h3>
-                        <p id="careerAdvice" class="text-indigo-200 text-sm italic"></p>
+                        <h3 class="text-xl font-bold mb-3 uppercase tracking-tighter text-indigo-300">Kariyer Tavsiyesi</h3>
+                        <p id="careerAdvice" class="text-indigo-100 text-sm italic font-medium leading-relaxed"></p>
                     </div>
                 </div>
+
                 <div id="welcome" class="glass-panel p-16 rounded-3xl text-center border-dashed border-2 border-slate-300">
-                    <i class="fas fa-magic text-5xl text-slate-200 mb-4"></i>
-                    <p class="text-slate-400 font-medium">Verileri girip analizi başlatın.</p>
+                    <i class="fas fa-shield-virus text-5xl text-slate-200 mb-4"></i>
+                    <p class="text-slate-400 font-medium italic">Güvenli mod aktif. Bilgileri girerek başlayın.</p>
                 </div>
             </div>
         </div>
     </main>
 
     <script>
-        // STORAGE_KEY ismini v1_6 yaparak geçmiş hataları tamamen siliyoruz
-        const STORAGE_KEY = 'career_coach_api_key_v1_6';
-
-        window.onload = () => {
-            const savedKey = localStorage.getItem(STORAGE_KEY);
-            if (!savedKey) {
-                document.getElementById('setupModal').classList.remove('hidden');
-            } else {
-                updateStatus('green', 'Hazır');
-            }
-        };
-
-        function saveKey() {
-            const val = document.getElementById('keyInput').value.trim();
-            if (val.startsWith('AIza')) {
-                localStorage.setItem(STORAGE_KEY, val);
-                document.getElementById('setupModal').classList.add('hidden');
-                location.reload();
-            } else {
-                alert("Lütfen geçerli bir anahtar girin.");
-            }
-        }
-
-        function resetKey() {
-            localStorage.removeItem(STORAGE_KEY);
-            location.reload();
-        }
-
-        function updateStatus(color, text) {
-            const dot = document.getElementById('statusDot');
-            const txt = document.getElementById('statusText');
-            dot.className = `w-2 h-2 rounded-full animate-pulse bg-${color}-400`;
-            txt.innerText = text;
-        }
+        /**
+         * 🏁 FİNAL ADIM:
+         * Az önce Google Apps Script'ten aldığın "/exec" ile biten URL'yi 
+         * aşağıdaki tırnakların içine yapıştır.
+         */
+        const proxyUrl = "https://script.google.com/macros/s/AKfycbyb2NDNSzXtrv5fF-VDqS1sdNIRkPAr0ZWSGXv2IWNitdE3MFIpw5eLCJj3d2mQ5Dap/exec"; 
 
         async function analyzeCareer() {
-            const apiKey = localStorage.getItem(STORAGE_KEY);
             const jobDesc = document.getElementById('jobDesc').value;
             const userSkills = document.getElementById('userSkills').value;
             const btn = document.getElementById('analyzeBtn');
 
-            if (!apiKey) {
-                document.getElementById('setupModal').classList.remove('hidden');
+            if (proxyUrl === "BURAYA_ALDIĞIN_URL_YI_YAPIŞTIR") {
+                alert("Lütfen koddaki proxyUrl kısmına Google Apps Script linkinizi ekleyin!");
                 return;
             }
 
             if (!jobDesc || !userSkills) {
-                alert("Lütfen alanları doldurun.");
+                alert("Lütfen tüm alanları doldurun.");
                 return;
             }
 
@@ -150,47 +104,33 @@
             document.getElementById('loading').classList.remove('hidden');
             btn.disabled = true;
 
-            // ÇÖZÜM: 'Invalid JSON payload' hatasını önlemek için talimatları mesajın içine gömüyoruz.
-            // Bu format v1, v1beta ve tüm modellerle uyumludur.
-            const promptText = `Sen profesyonel bir kariyer koçusun. Lütfen aşağıdaki verileri analiz et:
-            
+            // Prompt hazırlığı
+            const prompt = `Sen kıdemli bir kariyer koçusun. 
             İş İlanı: ${jobDesc}
             Kullanıcı Yetenekleri: ${userSkills}
-
-            Lütfen cevabını SADECE şu JSON formatında ver (başka bir şey yazma):
-            {"gap_analysis": "özet metin", "weeks": [{"week": 1, "topic": "konu", "tasks": ["görev"]}], "advice": "tavsiye"}`;
+            
+            Lütfen analizi SADECE şu JSON formatında yap (başka metin ekleme):
+            {"gap_analysis": "özet", "weeks": [{"week": 1, "topic": "konu", "tasks": ["görev 1"]}], "advice": "tavsiye"}`;
 
             try {
-                // Endpoint v1beta olarak kalmalı, en stabil Flash desteği orada.
-                const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
-                
-                const response = await fetch(url, {
+                // Kendi "Server"ımıza istek atıyoruz
+                const response = await fetch(proxyUrl, {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        contents: [{ parts: [{ text: promptText }] }]
-                    })
+                    body: JSON.stringify({ prompt: prompt })
                 });
 
                 const result = await response.json();
                 
-                if (result.error) {
-                    throw new Error(result.error.message);
-                }
-
-                // AI'dan gelen ham metni temizliyoruz
-                let responseText = result.candidates[0].content.parts[0].text;
-                responseText = responseText.replace(/```json/g, "").replace(/```/g, "").trim();
+                // AI yanıtını al ve JSON'a çevir (Markdown temizliği yaparak)
+                let text = result.candidates[0].content.parts[0].text;
+                text = text.replace(/```json/g, "").replace(/```/g, "").trim();
                 
-                const data = JSON.parse(responseText);
+                const data = JSON.parse(text);
                 renderResults(data);
-                updateStatus('green', 'Başarılı');
 
             } catch (error) {
                 console.error(error);
-                alert("Hata: " + error.message);
-                document.getElementById('welcome').classList.remove('hidden');
-                updateStatus('red', 'Hata');
+                alert("Bağlantı Hatası: Lütfen Apps Script ayarlarını (Herkes/Anyone erişimi) kontrol edin.");
             } finally {
                 document.getElementById('loading').classList.add('hidden');
                 btn.disabled = false;
@@ -205,8 +145,8 @@
             grid.innerHTML = "";
             data.weeks.forEach(w => {
                 const card = document.createElement('div');
-                card.className = "glass-panel p-6 rounded-2xl border-t-4 border-t-indigo-600 shadow-sm";
-                card.innerHTML = `<h4 class="font-bold mb-2">Hafta ${w.week}: ${w.topic}</h4><ul class="text-xs space-y-1 text-slate-500">${w.tasks.map(t => `<li>• ${t}</li>`).join('')}</ul>`;
+                card.className = "roadmap-card glass-panel p-6 rounded-2xl shadow-sm";
+                card.innerHTML = `<h4 class="font-bold mb-2 text-indigo-900 italic uppercase text-[10px]">Hafta ${w.week}: ${w.topic}</h4><ul class="text-[11px] space-y-1 text-slate-500 font-medium">${w.tasks.map(t => `<li>• ${t}</li>`).join('')}</ul>`;
                 grid.appendChild(card);
             });
         }
