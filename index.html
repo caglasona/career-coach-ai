@@ -50,15 +50,17 @@
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
+
+        /* Tailwind yüklenmezse diye yedek görsel düzenleme */
+        header { padding: 4rem 1rem; text-align: center; color: white; margin-bottom: 2rem; }
+        .flex-container { display: flex; flex-wrap: wrap; gap: 2rem; max-width: 1000px; margin: 0 auto; padding: 0 1rem; }
     </style>
 </head>
 <body class="min-h-screen text-slate-900 leading-relaxed">
 
     <!-- Üst Başlık Bölümü -->
-    <header class="ai-gradient text-white py-16 px-6 relative overflow-hidden">
-        <div class="absolute top-0 right-0 -mt-20 -mr-20 w-80 h-80 bg-white/10 rounded-full blur-3xl"></div>
-        
-        <div class="max-w-5xl mx-auto flex flex-col md:flex-row justify-between items-center relative z-10 gap-8">
+    <header class="ai-gradient shadow-lg">
+        <div class="max-w-5xl mx-auto flex flex-col md:flex-row justify-between items-center gap-6 px-6">
             <div class="text-center md:text-left">
                 <h1 class="text-4xl md:text-5xl font-extrabold tracking-tight mb-3 italic">
                     AI Career <span class="text-indigo-200 uppercase font-black">Coach</span>
@@ -73,7 +75,7 @@
                     <span class="w-3 h-3 bg-green-400 rounded-full animate-ping"></span>
                     <span class="text-xs font-black tracking-widest uppercase">Sunucu Durumu</span>
                 </div>
-                <p class="text-xl font-bold uppercase tracking-tight text-green-300">AKTİF</p>
+                <p class="text-xl font-bold uppercase tracking-tight text-green-300">BAĞLI</p>
             </div>
         </div>
     </header>
@@ -158,11 +160,10 @@
 
     <script>
         /**
-         * 🏁 FINAL ADIM:
-         * Google Apps Script'ten aldığın "/exec" ile biten URL'yi 
-         * aşağıdaki tırnakların içine yapıştır.
+         * 🏁 FINAL GÜNCELLEME:
+         * CORS sorunlarını aşmak için fetch parametrelerini sadeleştirdik.
          */
-        const proxyUrl = "https://script.google.com/macros/s/AKfycbwaDV4eVy1wCTUkopiB0LZygk9319rXRdL1HH_9bILHGI3sAbNYy-mRWxn6TETARDIk/exec"; 
+        const proxyUrl = "https://script.google.com/macros/s/AKfycbw6ov-WCFyuwdHwRWQF7IHkO0qTz8yuNTnGnqFGGFI8USs7b1EK4rBtRQQk9sjfF6qr/exec"; 
 
         async function analyzeCareer() {
             const jobDesc = document.getElementById('jobDesc').value.trim();
@@ -188,25 +189,27 @@
 İş İlanı: ${jobDesc}
 Kullanıcı Yetenekleri: ${userSkills}
 
-Lütfen cevabını SADECE şu JSON formatında ver (başka bir şey yazma):
-{"gap_analysis": "özet metin", "weeks": [{"week": 1, "topic": "konu", "tasks": ["görev"]}], "advice": "tavsiye"}`;
+Lütfen cevabını SADECE şu JSON formatında ver:
+{"gap_analysis": "özet", "weeks": [{"week": 1, "topic": "konu", "tasks": ["görev"]}], "advice": "tavsiye"}`;
 
             try {
-                // Sunucuya istek atılıyor
+                // MÜHENDİSLİK NOTU: CORS preflight (OPTIONS) isteğini önlemek için 
+                // Content-Type başlığını siliyoruz. Google Script bunu 'text/plain' olarak 
+                // alacak ve e.postData.contents içinde okuyacaktır.
                 const response = await fetch(proxyUrl, {
                     method: 'POST',
+                    mode: 'cors', // CORS'u açık bırak ama basit istek yap
                     body: JSON.stringify({ prompt: fullPrompt })
                 });
 
                 if (!response.ok) {
-                    throw new Error(`Sunucu Hatası: ${response.status} - Lütfen Apps Script erişim ayarlarını kontrol edin.`);
+                    throw new Error("Sunucu yanıt vermedi. Apps Script ayarlarında 'Anyone' seçili olduğundan emin olun.");
                 }
 
                 const result = await response.json();
                 
                 if (result.error) throw new Error(result.error);
 
-                // AI yanıtını işle
                 let text = result.candidates[0].content.parts[0].text;
                 text = text.replace(/```json/g, "").replace(/```/g, "").trim();
                 
@@ -215,7 +218,7 @@ Lütfen cevabını SADECE şu JSON formatında ver (başka bir şey yazma):
 
             } catch (error) {
                 console.error("Detaylı Hata:", error);
-                alert("Bağlantı Hatası: Sunucu yanıt vermedi. \n\nOlası Nedenler:\n1. Apps Script erişimi 'Anyone' (Herkes) olarak ayarlanmamış.\n2. URL yanlış kopyalanmış.\n3. Yeni versiyon dağıtılmamış (Re-deploy).");
+                alert("Hata Oluştu!\n\nTeknik Detay: " + error.message + "\n\nİpucu: Eğer 'Failed to fetch' alıyorsanız, tarayıcı eklentilerinizi (AdBlock vb.) kapatıp sayfayı yenileyin.");
                 document.getElementById('welcome').classList.remove('hidden');
             } finally {
                 document.getElementById('loading').classList.add('hidden');
@@ -233,14 +236,14 @@ Lütfen cevabını SADECE şu JSON formatında ver (başka bir şey yazma):
             
             data.weeks.forEach(w => {
                 const card = document.createElement('div');
-                card.className = "roadmap-card glass-panel p-8 rounded-[2rem]";
+                card.className = "roadmap-card glass-panel p-8 rounded-[2rem] bg-white";
                 card.innerHTML = `
                     <div class="flex items-center justify-between mb-4">
                         <span class="bg-indigo-100 text-indigo-700 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest italic">Hafta ${w.week}</span>
                         <i class="fas fa-check-double text-indigo-200"></i>
                     </div>
-                    <h4 class="font-bold text-slate-800 mb-3 leading-tight italic">${w.topic}</h4>
-                    <ul class="text-xs space-y-2 text-slate-500 font-medium">
+                    <h4 class="font-bold text-slate-800 mb-3 leading-tight italic text-lg">${w.topic}</h4>
+                    <ul class="text-sm space-y-2 text-slate-500 font-medium">
                         ${w.tasks.map(t => `<li>• ${t}</li>`).join('')}
                     </ul>
                 `;
