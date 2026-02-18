@@ -16,7 +16,7 @@
 </head>
 <body class="min-h-screen text-slate-900">
 
-    <!-- AYARLAR MODALI: Sadece anahtar yoksa görünür -->
+    <!-- AYARLAR MODALI: Sadece anahtar yoksa veya hatalıysa görünür -->
     <div id="setupModal" class="fixed inset-0 z-[100] setup-overlay flex items-center justify-center p-6 hidden">
         <div class="bg-white rounded-[2.5rem] p-10 max-w-md w-full shadow-2xl">
             <div class="w-16 h-16 bg-indigo-100 rounded-2xl flex items-center justify-center mb-6 text-indigo-600 text-2xl">
@@ -24,7 +24,7 @@
             </div>
             <h2 class="text-2xl font-bold mb-2">Sistem Kurulumu</h2>
             <p class="text-slate-500 text-sm mb-8 leading-relaxed">
-                Bu uygulama Google Gemini AI kullanır. Güvenliğiniz için anahtarınızı buraya girin. Anahtarınız sadece bu tarayıcıda saklanır, asla sunucuya gönderilmez.
+                Bu uygulama Google Gemini AI (v1 Stable) kullanır. Anahtarınız sadece bu tarayıcıda saklanır, GitHub'a gönderilmez.
             </p>
             <input id="keyInput" type="password" placeholder="Gemini API Anahtarınızı Yapıştırın" 
                 class="w-full bg-slate-100 border-none rounded-2xl p-4 text-sm mb-4 focus:ring-2 focus:ring-indigo-500 outline-none">
@@ -33,7 +33,7 @@
             </button>
             <p class="text-center mt-4">
                 <a href="https://aistudio.google.com/app/apikey" target="_blank" class="text-indigo-600 text-xs font-bold hover:underline">
-                    Anahtarım Yok, Ücretsiz Almak İstiyorum <i class="fas fa-external-link-alt ml-1"></i>
+                    Yeni Anahtar Oluştur <i class="fas fa-external-link-alt ml-1"></i>
                 </a>
             </p>
         </div>
@@ -123,7 +123,7 @@
         }
 
         function resetKey() {
-            if(confirm("API Anahtarını silmek istiyor musunuz?")) {
+            if(confirm("API Anahtarını silip yeniden yapılandırmak istiyor musunuz?")) {
                 localStorage.removeItem(STORAGE_KEY);
                 location.reload();
             }
@@ -148,7 +148,7 @@
             }
 
             if (!jobDesc || !userSkills) {
-                alert("Lütfen alanları doldurun.");
+                alert("Lütfen tüm alanları doldurun.");
                 return;
             }
 
@@ -157,36 +157,41 @@
             document.getElementById('loading').classList.remove('hidden');
             btn.disabled = true;
 
-            const systemPrompt = `Sen bir kariyer koçusun. Cevabını JSON formatında ver: {"gap_analysis": "özet", "weeks": [{"week": 1, "topic": "konu", "tasks": ["görev"]}], "advice": "tavsiye"}`;
+            const systemPrompt = `Sen bir kariyer koçusun. Kullanıcının hedef iş ilanı ve yeteneklerini karşılaştır. Cevabını MUTLAKA JSON formatında ver: {"gap_analysis": "özet metin", "weeks": [{"week": 1, "topic": "konu", "tasks": ["görev 1", "görev 2"]}], "advice": "tavsiye"}`;
 
             try {
-                // MODEL GÜNCELLEMESİ: gemini-1.5-flash yerine gemini-2.5-flash-preview-09-2025 kullanılıyor
-                const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`, {
+                // KARARLI ÇÖZÜM: /v1/ yolu ve gemini-1.5-flash modeli
+                const response = await fetch(`https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=${apiKey}`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
                         contents: [{ parts: [{ text: `İş: ${jobDesc}\nBeceriler: ${userSkills}` }] }],
                         systemInstruction: { parts: [{ text: systemPrompt }] },
-                        generationConfig: { responseMimeType: "application/json" }
+                        generationConfig: { 
+                            responseMimeType: "application/json",
+                            temperature: 0.7 
+                        }
                     })
                 });
 
                 const result = await response.json();
                 
                 if (result.error) {
-                    if (result.error.message.includes("API key")) {
-                        throw new Error("Geçersiz veya süresi dolmuş API anahtarı. Ayarlardan güncelleyin.");
+                    if (result.error.status === "PERMISSION_DENIED") {
+                        throw new Error("API Anahtarınız engellenmiş veya sızdırılmış. Lütfen AI Studio'dan YENİ bir anahtar alıp ayarlardan güncelleyin.");
                     }
                     throw new Error(result.error.message);
                 }
 
                 const data = JSON.parse(result.candidates[0].content.parts[0].text);
                 renderResults(data);
+                updateStatus('green', 'Analiz Başarılı');
 
             } catch (error) {
                 console.error(error);
                 alert("Sistem Hatası: " + error.message);
                 document.getElementById('welcome').classList.remove('hidden');
+                updateStatus('red', 'Bağlantı Hatası');
             } finally {
                 document.getElementById('loading').classList.add('hidden');
                 btn.disabled = false;
@@ -202,7 +207,7 @@
             data.weeks.forEach(w => {
                 const card = document.createElement('div');
                 card.className = "glass-panel p-6 rounded-2xl border-t-4 border-t-indigo-600 shadow-sm";
-                card.innerHTML = `<h4 class="font-bold mb-2">Hafta ${w.week}: ${w.topic}</h4><ul class="text-xs space-y-1">${w.tasks.map(t => `<li>• ${t}</li>`).join('')}</ul>`;
+                card.innerHTML = `<h4 class="font-bold mb-2">Hafta ${w.week}: ${w.topic}</h4><ul class="text-xs space-y-1 text-slate-500">${w.tasks.map(t => `<li>• ${t}</li>`).join('')}</ul>`;
                 grid.appendChild(card);
             });
         }
