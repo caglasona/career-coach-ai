@@ -4,42 +4,84 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AI Career Coach | Çağla Sona</title>
+    <!-- Tailwind CSS ve İkonlar -->
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
-        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #f8fafc; }
-        .ai-gradient { background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%); }
-        .glass-panel { background: rgba(255, 255, 255, 0.9); backdrop-filter: blur(12px); border: 1px solid rgba(226, 232, 240, 0.8); box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.05); }
-        .roadmap-card { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); border-left: 4px solid #6366f1; }
-        .roadmap-card:hover { transform: translateY(-4px); box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1); }
-        .spinner { border: 3px solid rgba(0, 0, 0, 0.1); width: 40px; height: 40px; border-radius: 50%; border-left-color: #4f46e5; animation: spin 1s linear infinite; }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        
+        body { 
+            font-family: 'Plus Jakarta Sans', sans-serif; 
+            background-color: #f8fafc; 
+        }
+
+        .ai-gradient { 
+            background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%); 
+        }
+
+        .glass-panel { 
+            background: rgba(255, 255, 255, 0.9); 
+            backdrop-filter: blur(12px); 
+            border: 1px solid rgba(226, 232, 240, 0.8); 
+            box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.05);
+        }
+
+        .roadmap-card { 
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); 
+            border-left: 4px solid #6366f1;
+        }
+
+        .roadmap-card:hover { 
+            transform: translateY(-4px);
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+        }
+
+        .spinner {
+            border: 3px solid rgba(0, 0, 0, 0.1);
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border-left-color: #4f46e5;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
     </style>
 </head>
 <body class="min-h-screen text-slate-900 leading-relaxed">
 
+    <!-- Üst Bilgi (Header) -->
     <header class="ai-gradient text-white py-16 px-6 relative overflow-hidden">
         <div class="absolute top-0 right-0 -mt-20 -mr-20 w-80 h-80 bg-white/10 rounded-full blur-3xl"></div>
         <div class="max-w-5xl mx-auto flex flex-col md:flex-row justify-between items-center relative z-10 gap-8">
             <div class="text-center md:text-left">
-                <h1 class="text-4xl md:text-5xl font-extrabold tracking-tight mb-3 italic tracking-tighter">AI Career <span class="text-indigo-200 uppercase font-black">Coach</span></h1>
-                <p class="text-indigo-100 text-lg opacity-90 max-w-xl">Mühendislik portfolyonuz için profesyonel, güvenli ve hızlı analiz motoru.</p>
+                <h1 class="text-4xl md:text-5xl font-extrabold tracking-tight mb-3 italic">
+                    AI Career <span class="text-indigo-200 uppercase font-black tracking-tighter">Coach</span>
+                </h1>
+                <p class="text-indigo-100 text-lg opacity-90 max-w-xl font-medium">
+                    Mühendislik kariyeriniz için profesyonel, güvenli ve hızlı analiz motoru.
+                </p>
             </div>
             
+            <!-- Sistem Durum Paneli -->
             <div class="flex flex-col items-center bg-white/10 backdrop-blur-md p-6 rounded-[2.5rem] border border-white/20 min-w-[180px]">
                 <div class="flex items-center gap-3 mb-1">
                     <span class="w-3 h-3 bg-green-400 rounded-full animate-ping"></span>
-                    <span class="text-xs font-black tracking-widest uppercase text-indigo-100">Sunucu Durumu</span>
+                    <span class="text-xs font-black tracking-widest uppercase text-indigo-100">Sunucu</span>
                 </div>
-                <p class="text-xl font-bold uppercase tracking-tight text-green-300 italic">BAĞLI (CORS OK)</p>
+                <p class="text-xl font-bold uppercase tracking-tight text-green-300 italic">TIER 1 AKTİF</p>
             </div>
         </div>
     </header>
 
+    <!-- Ana İçerik -->
     <main class="max-w-5xl mx-auto px-6 -mt-12 pb-24 relative z-20">
         <div class="grid lg:grid-cols-3 gap-10">
             
+            <!-- Giriş Alanı (Sol Kolon) -->
             <div class="lg:col-span-1 space-y-8">
                 <div class="glass-panel p-8 rounded-[2.5rem] space-y-6">
                     <div>
@@ -47,7 +89,7 @@
                             <i class="fas fa-briefcase text-indigo-500"></i> Hedef İş İlanı
                         </label>
                         <textarea id="jobDesc" rows="6" 
-                            placeholder="İlan metnini buraya yapıştırın..." 
+                            placeholder="LinkedIn veya Kariyer.net ilan metnini buraya yapıştırın..." 
                             class="w-full bg-slate-50 border border-slate-200 rounded-2xl p-4 text-sm focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 outline-none transition-all resize-none"></textarea>
                     </div>
                     
@@ -56,7 +98,7 @@
                             <i class="fas fa-code text-indigo-500"></i> Mevcut Yetenekler
                         </label>
                         <textarea id="userSkills" rows="6" 
-                            placeholder="Bildiğiniz teknolojiler..." 
+                            placeholder="Bildiğiniz diller, kütüphaneler ve projeleriniz..." 
                             class="w-full bg-slate-50 border border-slate-200 rounded-2xl p-4 text-sm focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 outline-none transition-all resize-none"></textarea>
                     </div>
 
@@ -67,47 +109,63 @@
                 </div>
             </div>
 
+            <!-- Sonuç Alanı (Sağ Kolon) -->
             <div class="lg:col-span-2 space-y-8">
+                
+                <!-- Hoşgeldin Ekranı -->
                 <div id="welcome" class="glass-panel p-20 rounded-[3rem] text-center border-dashed border-2 border-slate-300">
                     <div class="w-24 h-24 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-6 text-indigo-300">
                         <i class="fas fa-shield-check text-4xl"></i>
                     </div>
                     <h3 class="text-xl font-bold text-slate-400 mb-2 uppercase tracking-tighter italic">Analize Hazır</h3>
-                    <p class="text-slate-400 text-sm max-w-xs mx-auto italic font-medium">Verileri girip butona bastığınızda 4 haftalık yol haritanız oluşturulacaktır.</p>
+                    <p class="text-slate-400 text-sm max-w-xs mx-auto italic font-medium">
+                        Verileri girip butona bastığınızda 4 haftalık yol haritanız oluşturulacaktır.
+                    </p>
                 </div>
 
+                <!-- Yükleme Ekranı -->
                 <div id="loading" class="hidden glass-panel p-24 rounded-[3rem] text-center">
                     <div class="spinner mx-auto mb-6"></div>
-                    <p class="text-indigo-900 font-bold italic animate-pulse tracking-tight">AI Sunucusuna Bağlanılıyor...</p>
+                    <p class="text-indigo-900 font-bold italic animate-pulse">Tier 1 Sunucu Üzerinden Yanıt Bekleniyor...</p>
                 </div>
 
+                <!-- Sonuç Paneli -->
                 <div id="results" class="hidden space-y-8 animate-in fade-in duration-700">
-                    <div class="glass-panel p-10 rounded-[2.5rem] relative overflow-hidden">
+                    <!-- Yetenek Analizi Kartı -->
+                    <div class="glass-panel p-10 rounded-[2.5rem] relative overflow-hidden border-l-8 border-indigo-600">
                         <h3 class="text-2xl font-black mb-6 text-indigo-950 flex items-center gap-3 uppercase italic">
                             <span class="w-10 h-1 bg-indigo-600 rounded-full"></span>
                             Yetenek Açığı Analizi
                         </h3>
                         <div id="gapAnalysis" class="text-slate-700 leading-relaxed font-medium text-lg italic border-l-4 border-indigo-100 pl-6"></div>
                     </div>
+
+                    <!-- Yol Haritası Grid -->
                     <div id="roadmapGrid" class="grid md:grid-cols-2 gap-6"></div>
+
+                    <!-- Tavsiye Kartı -->
                     <div class="bg-indigo-950 text-white p-12 rounded-[3rem] shadow-2xl relative overflow-hidden border-t-8 border-indigo-500">
                         <h3 class="text-xl font-bold mb-4 uppercase tracking-[0.2em] text-indigo-400 italic">Mühendisçe Tavsiye</h3>
-                        <p id="careerAdvice" class="text-indigo-100 text-lg italic leading-relaxed font-medium"></p>
+                        <p id="careerAdvice" class="text-indigo-100 text-lg italic leading-relaxed font-medium font-bold"></p>
                     </div>
                 </div>
             </div>
         </div>
     </main>
 
+    <!-- Alt Bilgi -->
     <footer class="max-w-5xl mx-auto px-6 py-12 border-t border-slate-200 text-center">
-        <p class="text-slate-400 text-xs font-bold uppercase tracking-widest italic">
-            &copy; 2026 Çağla Sona | Bilgisayar Mühendisliği Kariyer Projesi
+        <p class="text-slate-400 text-xs font-bold uppercase tracking-widest italic font-black">
+            &copy; 2026 Çağla Sona | Mühendislik Portfolyo Projesi
         </p>
     </footer>
 
     <script>
-        // 🏁 URL'nin doğruluğunu ve Apps Script'te "Anyone" erişimini kontrol etmeyi unutma!
-        const proxyUrl = "https://script.google.com/macros/s/AKfycby6tFegL4YhzjaHCBO8EyiwXs35fo8ANrF4WmWYUQz6VSe_hJFmEc5uZp7vwPH5Foi4/exec"; 
+        /**
+         * 🏁 BAĞLANTI AYARI:
+         * Çağla, senin verdiğin sonu /exec ile biten URL'yi aşağıya ekledim.
+         */
+        const proxyUrl = "https://script.google.com/macros/s/AKfycbzFErVf4Gl2l9AqTlnNhaQEnAKuVi4h5pDApDu7lRSKcEqzt50e9GPU8GyZkZQI5MUR/exec"; 
 
         async function analyzeCareer() {
             const jobDesc = document.getElementById('jobDesc').value.trim();
@@ -119,30 +177,39 @@
                 return;
             }
 
+            // Arayüzü güncelle
             document.getElementById('welcome').classList.add('hidden');
             document.getElementById('results').classList.add('hidden');
             document.getElementById('loading').classList.remove('hidden');
             btn.disabled = true;
 
-            const fullPrompt = `Kariyer koçu olarak analiz et: İş: ${jobDesc}, Yetenekler: ${userSkills}. SADECE şu JSON ver: {"gap_analysis": "özet", "weeks": [{"week": 1, "topic": "...", "tasks": ["..."]}], "advice": "..."}`;
+            const fullPrompt = `Sen profesyonel bir kariyer koçusun. 
+            İş İlanı: ${jobDesc}
+            Kullanıcı Yetenekleri: ${userSkills}
+            Lütfen analizi SADECE şu JSON formatında yap:
+            {"gap_analysis": "özet", "weeks": [{"week": 1, "topic": "konu", "tasks": ["görev 1"]}], "advice": "tavsiye"}`;
 
             try {
                 /**
-                 * 💡 CORS ÇÖZÜMÜ (MÜHENDİSLİK):
-                 * Google Apps Script redirect (yönlendirme) yaptığı için 'redirect: follow' ekliyoruz.
-                 * Karmaşık başlıkları (Content-Type JSON gibi) kaldırarak preflight engelini aşıyoruz.
+                 * 💡 CORS ÇÖZÜMÜ:
+                 * Content-Type: 'text/plain' kullanarak Preflight engeline takılmıyoruz.
+                 * 'redirect: follow' ile Google Apps Script'in yönlendirmesini takip ediyoruz.
                  */
                 const response = await fetch(proxyUrl, {
                     method: 'POST',
                     mode: 'cors',
                     redirect: 'follow',
+                    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
                     body: JSON.stringify({ prompt: fullPrompt })
                 });
+
+                if (!response.ok) throw new Error("Sunucu yanıt vermedi.");
 
                 const result = await response.json();
                 
                 if (result.error) throw new Error(result.error);
 
+                // AI yanıtını temizle ve parse et
                 let text = result.candidates[0].content.parts[0].text;
                 text = text.replace(/```json/g, "").replace(/```/g, "").trim();
                 
@@ -151,7 +218,7 @@
 
             } catch (error) {
                 console.error("Hata Detayı:", error);
-                alert("⚠️ BAĞLANTI HATASI\n\nÇÖZÜM:\n1. Apps Script'te Deploy -> Manage Deployments -> Edit -> New Version yapmalısın.\n2. Google hesabında oturumun açık olduğundan emin ol.");
+                alert("⚠️ BAĞLANTI HATASI\n\nBu hatayı görüyorsanız lütfen şunları kontrol edin:\n1. Apps Script'te 'New Version' olarak deploy edildi mi?\n2. Erişim ayarı 'Anyone' (Herkes) olarak seçildi mi?\n3. API Anahtarınız Tier 1 (Ücretli) yetkisine sahip mi?");
                 document.getElementById('welcome').classList.remove('hidden');
             } finally {
                 document.getElementById('loading').classList.add('hidden');
@@ -163,20 +230,23 @@
             document.getElementById('results').classList.remove('hidden');
             document.getElementById('gapAnalysis').innerText = data.gap_analysis;
             document.getElementById('careerAdvice').innerText = data.advice;
+            
             const grid = document.getElementById('roadmapGrid');
             grid.innerHTML = "";
+            
             data.weeks.forEach(w => {
                 const card = document.createElement('div');
                 card.className = "roadmap-card glass-panel p-8 rounded-[2rem] bg-white";
                 card.innerHTML = `
                     <div class="flex items-center justify-between mb-4">
-                        <span class="bg-indigo-50 text-indigo-700 px-3 py-1 rounded-full text-[10px] font-black uppercase italic tracking-widest">Hafta ${w.week}</span>
-                        <i class="fas fa-check-circle text-indigo-100"></i>
+                        <span class="bg-indigo-50 text-indigo-700 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest italic">Hafta ${w.week}</span>
+                        <i class="fas fa-check-circle text-indigo-200"></i>
                     </div>
-                    <h4 class="font-bold text-slate-800 mb-3 leading-tight italic">${w.topic}</h4>
+                    <h4 class="font-bold text-slate-800 mb-3 leading-tight italic uppercase text-xs tracking-tighter">${w.topic}</h4>
                     <ul class="text-[11px] space-y-2 text-slate-500 font-medium">
                         ${w.tasks.map(t => `<li>• ${t}</li>`).join('')}
-                    </ul>`;
+                    </ul>
+                `;
                 grid.appendChild(card);
             });
         }
